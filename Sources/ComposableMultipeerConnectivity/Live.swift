@@ -37,7 +37,8 @@ extension MultipeerConnectivity {
                     subscriber: subscriber,
                     session: session,
                     sessionDelegate: sessionDelegate,
-                    myPeerID: myPeerID
+                    myPeerID: myPeerID,
+                    availablePeerIDs: availablePeers
                 )
                 
                 subscriber.send(.initialized)
@@ -147,7 +148,7 @@ private struct Dependencies {
     let sessionDelegate: SessionDelegate
     
     let myPeerID: MCPeerID
-    var availablePeerIDs: [MCPeerID] = []
+    var availablePeerIDs: [MCPeerID]
     
     func getMCPeerIDs(for peers: [PeerID]) -> [MCPeerID] {
         let requestedDisplayNames = peers.map { $0.displayName }
