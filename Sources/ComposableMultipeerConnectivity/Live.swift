@@ -79,9 +79,11 @@ extension MultipeerConnectivity {
         
         client.invitePeer = { id, peerID, context, timeout in
             .fireAndForget {
-                if let session = dependencies[id]?.session {
+                if let session = dependencies[id]?.session,
+                   let peer = session.connectedPeers.first(where: { $0.displayName == peerID.displayName }) {
+                    
                     dependencies[id]?.serviceBrowser.invitePeer(
-                        .init(displayName: peerID.displayName),
+                        peer,
                         to: session,
                         withContext: context,
                         timeout: timeout
