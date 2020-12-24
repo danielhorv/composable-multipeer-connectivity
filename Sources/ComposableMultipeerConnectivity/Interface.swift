@@ -20,6 +20,12 @@ public struct PeerID: Equatable {
     }
 }
 
+extension PeerID: Identifiable {
+    public var id: String {
+        return displayName
+    }
+}
+
 public struct MultipeerConnectivity {
     
     public struct Error: Swift.Error, Equatable {

@@ -1,9 +1,8 @@
-import Foundation
 import Combine
 import ComposableArchitecture
 import MultipeerConnectivity
 
-extension MultipeerConnectivity{
+extension MultipeerConnectivity {
     public static let live: MultipeerConnectivity = {
         var client = MultipeerConnectivity()
         
@@ -116,7 +115,7 @@ extension MultipeerConnectivity{
                 case .all:
                     peers = dependencies[id]?.session.connectedPeers ?? []
                 case let.peers(selectedPeers):
-                    let lol = dependencies[id]?.getMCPeerIDs(for: selectedPeers) ?? []
+                    peers = dependencies[id]?.getMCPeerIDs(for: selectedPeers) ?? []
                 }
                 
                 do {
