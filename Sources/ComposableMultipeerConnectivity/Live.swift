@@ -165,11 +165,11 @@ private class NearbyServiceBrowserDelegate: NSObject, MCNearbyServiceBrowserDele
       }
     
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        subscriber.send(.foundPeer(peerID, discoveryInfo: info))
+        subscriber.send(.foundPeer(.init(peerId: peerID), discoveryInfo: info))
     }
     
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        subscriber.send(.lostPeer(peerID))
+        subscriber.send(.lostPeer(.init(peerId: peerID)))
     }
     
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
@@ -205,7 +205,7 @@ private class NearbyServiceAdvertiserDelegate: NSObject, MCNearbyServiceAdvertis
         invitationHandlerSubject.send((accept, session))
     }
     
-    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: PeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         print("advertiser_before_didReveiceInvitation")
         
         // automatically reject request if there are currently connecting an other peer
@@ -216,7 +216,7 @@ private class NearbyServiceAdvertiserDelegate: NSObject, MCNearbyServiceAdvertis
         
         isConnecting = true
         
-        subscriber.send(.didReveiveInvitationFromPeer(peerID, context: context))
+        subscriber.send(.didReveiveInvitationFromPeer(.init(peerId: peerID), context: context))
         
         // store the invitationHandler and handle in the invitationHandlerSubject
         self.invitationHandler = invitationHandler
@@ -241,36 +241,36 @@ private class SessionDelegate: NSObject, MCSessionDelegate {
         self.subscriber = subscriber
     }
     
-    func session(_ session: MCSession, peer peerID: PeerID, didChange state: MCSessionState) {
+    func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         // Hack
         DispatchQueue.main.async { [weak self] in
-            self?.subscriber.send(.didChangePeer(peerID, state: state))
+            self?.subscriber.send(.didChangePeer(.init(peerId: peerID), state: state))
         }
     }
     
-    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: PeerID) {
-        subscriber.send(.didReceiveData(data, fromPeer: peerID))
+    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+        subscriber.send(.didReceiveData(data, fromPeer: .init(peerId: peerID)))
     }
     
-    func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: PeerID) {
-        subscriber.send(.didReceiveStream(stream, streamName: streamName, fromPeer: peerID))
+    func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
+        subscriber.send(.didReceiveStream(stream, streamName: streamName, fromPeer: .init(peerId: peerID)))
     }
     
-    func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: PeerID, with progress: Progress) {
-        subscriber.send(.didStartReveivingResourceWithName(resourceName, fromPeer: peerID, progress: progress))
+    func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {
+        subscriber.send(.didStartReveivingResourceWithName(resourceName, fromPeer: .init(peerId: peerID), progress: progress))
     }
     
-    func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: PeerID, at localURL: URL?, withError error: Error?) {
+    func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?) {
         var localError: MultipeerConnectivity.Error?
         
         if let error = error {
             localError = .init(error)
         }
         
-        subscriber.send(.didFinishReceivingResourceWithName(resourceName, fromPeer: peerID, localURL: localURL, error: localError))
+        subscriber.send(.didFinishReceivingResourceWithName(resourceName, fromPeer: .init(peerId: peerID), localURL: localURL, error: localError))
     }
     
-    func session(_ session: MCSession, didReceiveCertificate certificate: [Any]?, fromPeer peerID: PeerID, certificateHandler: @escaping (Bool) -> Void) {
+    func session(_ session: MCSession, didReceiveCertificate certificate: [Any]?, fromPeer peerID: MCPeerID, certificateHandler: @escaping (Bool) -> Void) {
         certificateHandler(true)
     }
 }
