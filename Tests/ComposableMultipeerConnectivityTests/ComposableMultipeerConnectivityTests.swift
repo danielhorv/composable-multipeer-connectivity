@@ -7,6 +7,15 @@ final class ComposableMultipeerConnectivityTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
     }
+    
+    func testPeerIDEncodeDecode() {
+        let myPeerID = PeerID(displayName: "myPeerID")
+        let partnerPeerID = PeerID(displayName: "partnerPeerID")
+        
+        XCTAssertTrue(myPeerID == myPeerID)
+        XCTAssertTrue(myPeerID == PeerID(displayName: "myPeerID"))
+        XCTAssertFalse(myPeerID == partnerPeerID)
+    }
 
     static var allTests = [
         ("testExample", testExample),
