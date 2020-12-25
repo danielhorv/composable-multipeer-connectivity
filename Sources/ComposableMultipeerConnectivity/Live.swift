@@ -216,11 +216,13 @@ private class NearbyServiceAdvertiserDelegate: NSObject, MCNearbyServiceAdvertis
         self.session = session
         super.init()
         
-        cancellable = invitationHandlerSubject.sink { [weak self] in
-            let (accept, session) = $0
-            self?.invitationHandler?(accept, session)
-            self?.isConnecting = false
-        }
+        cancellable = invitationHandlerSubject
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                let (accept, session) = $0
+                self?.invitationHandler?(accept, session)
+                self?.isConnecting = false
+            }
     }
     
     // delegate values for the invitationHandler
