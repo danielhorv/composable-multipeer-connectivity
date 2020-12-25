@@ -3,29 +3,6 @@ import Combine
 import ComposableArchitecture
 import MultipeerConnectivity
 
-public enum Receiver {
-    case all
-    case peers([PeerID])
-}
-
-public struct PeerID: Equatable {
-    public let displayName: String
-    
-    public init(displayName: String) {
-        self.displayName = displayName
-    }
-    
-    public init(peerId: MCPeerID) {
-        self.displayName = peerId.displayName
-    }
-}
-
-extension PeerID: Identifiable {
-    public var id: String {
-        return displayName
-    }
-}
-
 public struct MultipeerConnectivity {
     
     public struct Error: Swift.Error, Equatable {

@@ -2,21 +2,6 @@ import Combine
 import ComposableArchitecture
 import MultipeerConnectivity
 
-class PeerIDHolder: NSObject {
-    
-    private (set) var peerIds: [MCPeerID] = []
-    
-    func add(_ peerID: MCPeerID) {
-        peerIds.append(peerID)
-    }
-    
-    func remove(_ peerID: MCPeerID) {
-        if peerIds.contains(peerID) {
-            peerIds.removeAll(where: { $0 == peerID })
-        }
-    }
-}
-
 extension MultipeerConnectivity {
     public static let live: MultipeerConnectivity = {
         var client = MultipeerConnectivity()
@@ -30,9 +15,9 @@ extension MultipeerConnectivity {
                     serviceType: serviceType
                 )
                 
-                var peerIdHolder = PeerIDHolder()
+                var peerIdManager = PeerIDManager(myPeerId: myPeerID)
                 
-                let browserDelegate = NearbyServiceBrowserDelegate(subscriber, peerIdHolder: peerIdHolder)
+                let browserDelegate = NearbyServiceBrowserDelegate(subscriber, peerIdManager: peerIdManager)
                 serviceBrowser.delegate = browserDelegate
         
                 let advertiserService = MCNearbyServiceAdvertiser(peer: myPeerID, discoveryInfo: discoveryInfo, serviceType: serviceType)
@@ -52,8 +37,7 @@ extension MultipeerConnectivity {
                     subscriber: subscriber,
                     session: session,
                     sessionDelegate: sessionDelegate,
-                    myPeerID: myPeerID,
-                    peerIdHolder: peerIdHolder
+                    peerIdManager: peerIdManager
                 )
                 
                 subscriber.send(.initialized)
@@ -98,9 +82,7 @@ extension MultipeerConnectivity {
         client.invitePeer = { id, peerID, context, timeout in
             .fireAndForget {
                 if let session = dependencies[id]?.session,
-                   let peer = dependencies[id]?.peerIdHolder.peerIds.first(where: { $0.displayName == peerID.displayName })
-                {
-                    
+                   let peer = dependencies[id]?.peerIdManager.loadMCPeerID(for: peerID) {
                     dependencies[id]?.serviceBrowser.invitePeer(
                         peer,
                         to: session,
@@ -136,7 +118,7 @@ extension MultipeerConnectivity {
                 case .all:
                     peers = dependencies[id]?.session.connectedPeers ?? []
                 case let.peers(selectedPeers):
-                    peers = dependencies[id]?.getMCPeerIDs(for: selectedPeers) ?? []
+                    peers = dependencies[id]?.peerIdManager.loadMCPeerIDs(for: selectedPeers) ?? []
                 }
                 
                 do {
@@ -162,15 +144,7 @@ private struct Dependencies {
     let session: MCSession
     let sessionDelegate: SessionDelegate
     
-    let myPeerID: MCPeerID
-    var peerIdHolder: PeerIDHolder
-    
-    func getMCPeerIDs(for peers: [PeerID]) -> [MCPeerID] {
-        let requestedDisplayNames = peers.map { $0.displayName }
-        
-        return session.connectedPeers.filter { requestedDisplayNames.contains($0.displayName) }
-    }
-
+    var peerIdManager: PeerIDManager
 }
 
 private var dependencies: [AnyHashable: Dependencies] = [:]
@@ -178,20 +152,20 @@ private var dependencies: [AnyHashable: Dependencies] = [:]
 private class NearbyServiceBrowserDelegate: NSObject, MCNearbyServiceBrowserDelegate {
     
     private let subscriber: Effect<MultipeerConnectivity.Action, Never>.Subscriber
-    private var peerIdHolder: PeerIDHolder
+    private var peerIdManager: PeerIDManager
     
-    init(_ subscriber: Effect<MultipeerConnectivity.Action, Never>.Subscriber, peerIdHolder: PeerIDHolder) {
+    init(_ subscriber: Effect<MultipeerConnectivity.Action, Never>.Subscriber, peerIdManager: PeerIDManager) {
         self.subscriber = subscriber
-        self.peerIdHolder = peerIdHolder
+        self.peerIdManager = peerIdManager
       }
     
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        peerIdHolder.add(peerID)
+        peerIdManager.add(peerID)
         subscriber.send(.foundPeer(.init(peerId: peerID), discoveryInfo: info))
     }
     
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        peerIdHolder.remove(peerID)
+        peerIdManager.remove(peerID)
         subscriber.send(.lostPeer(.init(peerId: peerID)))
     }
     
@@ -267,7 +241,6 @@ private class SessionDelegate: NSObject, MCSessionDelegate {
     }
     
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
-        // Hack
         DispatchQueue.main.async { [weak self] in
             self?.subscriber.send(.didChangePeer(.init(peerId: peerID), state: state))
         }
