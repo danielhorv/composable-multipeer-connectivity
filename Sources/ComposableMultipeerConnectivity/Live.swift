@@ -182,7 +182,6 @@ private class NearbyServiceAdvertiserDelegate: NSObject, MCNearbyServiceAdvertis
     private let invitationHandlerSubject = PassthroughSubject<(Bool, MCSession?), Never>()
     private var cancellable: AnyCancellable?
     
-    private var isConnecting: Bool = false
     private var invitationHandler: ((Bool, MCSession?) -> Void)?
         
     init(subscriber: Effect<MultipeerConnectivity.Action, Never>.Subscriber, session: MCSession) {
@@ -195,7 +194,6 @@ private class NearbyServiceAdvertiserDelegate: NSObject, MCNearbyServiceAdvertis
             .sink { [weak self] in
                 let (accept, session) = $0
                 self?.invitationHandler?(accept, session)
-                self?.isConnecting = false
             }
     }
     
@@ -206,15 +204,7 @@ private class NearbyServiceAdvertiserDelegate: NSObject, MCNearbyServiceAdvertis
     
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         print("advertiser_before_didReveiceInvitation")
-        
-        // automatically reject request if there are currently connecting an other peer
-        guard !isConnecting else {
-            invitationHandler(false, nil)
-            return
-        }
-        
-        isConnecting = true
-        
+                
         subscriber.send(.didReveiveInvitationFromPeer(.init(peerId: peerID), context: context))
         
         // store the invitationHandler and handle in the invitationHandlerSubject
