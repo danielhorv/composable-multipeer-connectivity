@@ -247,7 +247,9 @@ private class SessionDelegate: NSObject, MCSessionDelegate {
     }
     
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        subscriber.send(.didReceiveData(data, fromPeer: .init(peerId: peerID)))
+        DispatchQueue.main.async { [weak self] in
+            self?.subscriber.send(.didReceiveData(data, fromPeer: .init(peerId: peerID)))
+        }
     }
     
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
