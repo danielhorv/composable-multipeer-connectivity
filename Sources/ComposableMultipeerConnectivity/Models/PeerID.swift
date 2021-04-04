@@ -1,7 +1,7 @@
 import Foundation
 import MultipeerConnectivity
 
-public struct PeerID: Equatable, Hashable {
+public struct PeerID: Equatable, Hashable, Codable {
     public let displayName: String
     
     public init(displayName: String) {
@@ -17,8 +17,4 @@ extension PeerID: Identifiable {
     public var id: String {
         return displayName
     }
-}
-
-public extension PeerID: Codable {
-    /*no-op*/
 }
