@@ -19,6 +19,6 @@ extension PeerID: Identifiable {
     }
 }
 
-extension PeerID: Codable {
+public extension PeerID: Codable {
     /*no-op*/
 }
