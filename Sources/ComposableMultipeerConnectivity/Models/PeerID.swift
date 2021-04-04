@@ -18,3 +18,7 @@ extension PeerID: Identifiable {
         return displayName
     }
 }
+
+extension PeerID: Codable {
+    /*no-op*/
+}
