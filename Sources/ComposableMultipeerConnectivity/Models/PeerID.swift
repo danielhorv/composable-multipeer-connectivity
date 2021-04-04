@@ -1,7 +1,7 @@
 import Foundation
 import MultipeerConnectivity
 
-public struct PeerID: Equatable {
+public struct PeerID: Equatable, Hashable {
     public let displayName: String
     
     public init(displayName: String) {
