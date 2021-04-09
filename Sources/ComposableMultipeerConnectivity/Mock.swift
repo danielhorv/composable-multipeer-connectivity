@@ -2,8 +2,9 @@ import Combine
 import ComposableArchitecture
 import MultipeerConnectivity
 
-public extension MultipeerConnectivity {
-    static func unimplemented(
+extension MultipeerConnectivity {
+    
+    public static func unimplemented(
         create: @escaping (AnyHashable, String, String, [String : String]?) -> Effect<Action, Never> = { _,_,_,_ in
             _unimplemented("create")
         },
