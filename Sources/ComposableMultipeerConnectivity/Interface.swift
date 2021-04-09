@@ -38,43 +38,43 @@ public struct MultipeerConnectivity {
         case receivingError(Error)
     }
     
-    var create: (AnyHashable, String, String, [String : String]?) -> Effect<Action, Never> = { _,_,_,_  in
+    public var create: (AnyHashable, String, String, [String : String]?) -> Effect<Action, Never> = { _,_,_,_  in
         _unimplemented("create")
     }
 
-    var destroy: (AnyHashable) -> Effect<Never, Never> = { _ in
+    public var destroy: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("destroy")
     }
 
-    var startBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    public var startBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("startBrowsingForPeers")
     }
     
-    var stopBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    public var stopBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("stopBrowsingForPeers")
     }
     
-    var startAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    public var startAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("startAdvertisingForPeers")
     }
     
-    var stopAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    public var stopAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("stopAdvertisingForPeers")
     }
     
-    var invitationHandler: (AnyHashable, Bool) -> Effect<Never, Never> = { _,_ in
+    public var invitationHandler: (AnyHashable, Bool) -> Effect<Never, Never> = { _,_ in
         _unimplemented("invitationHandler")
     }
 
-    var invitePeer: (AnyHashable, PeerID, Data?, TimeInterval) -> Effect<Never, Never> = { _,_,_,_ in
+    public var invitePeer: (AnyHashable, PeerID, Data?, TimeInterval) -> Effect<Never, Never> = { _,_,_,_ in
         _unimplemented("invitePeer")
     }
     
-    var disconnectAllPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    public var disconnectAllPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("disconnectFromSession")
     }
     
-    var send: (AnyHashable, Receiver, Data) -> Effect<Never, Never> = { _,_,_   in
+    public var send: (AnyHashable, Receiver, Data) -> Effect<Never, Never> = { _,_,_   in
         _unimplemented("send")
     }
     
