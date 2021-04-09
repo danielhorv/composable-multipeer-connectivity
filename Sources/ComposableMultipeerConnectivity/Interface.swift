@@ -119,7 +119,7 @@ public struct MultipeerConnectivity {
     }
 }
 
-func _unimplemented(
+public func _unimplemented(
   _ function: StaticString, file: StaticString = #file, line: UInt = #line
 ) -> Never {
   fatalError(
