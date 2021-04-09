@@ -38,43 +38,68 @@ public struct MultipeerConnectivity {
         case receivingError(Error)
     }
     
-    public var create: (AnyHashable, String, String, [String : String]?) -> Effect<Action, Never> = { _,_,_,_  in
+    
+    public init(
+        create: @escaping (AnyHashable, String, String, [String : String]?) -> Effect<Action, Never>,
+        destroy: @escaping (AnyHashable) -> Effect<Never, Never>,
+        startBrowsingForPeers: @escaping (AnyHashable) -> Effect<Never, Never>,
+        stopBrowsingForPeers: @escaping (AnyHashable) -> Effect<Never, Never>,
+        startAdvertisingForPeers: @escaping (AnyHashable) -> Effect<Never, Never>,
+        stopAdvertisingForPeers: @escaping (AnyHashable) -> Effect<Never, Never>,
+        invitationHandler: @escaping (AnyHashable, Bool) -> Effect<Never, Never>,
+        invitePeer: @escaping (AnyHashable, PeerID, Data?, TimeInterval) -> Effect<Never, Never>,
+        disconnectAllPeers: @escaping (AnyHashable) -> Effect<Never, Never>,
+        send: @escaping (AnyHashable, Receiver, Data) -> Effect<Never, Never>
+    ) {
+        self.create = create
+        self.destroy = destroy
+        self.startBrowsingForPeers = startBrowsingForPeers
+        self.stopBrowsingForPeers = stopBrowsingForPeers
+        self.startAdvertisingForPeers = startAdvertisingForPeers
+        self.stopAdvertisingForPeers = stopAdvertisingForPeers
+        self.invitationHandler = invitationHandler
+        self.invitePeer = invitePeer
+        self.disconnectAllPeers = disconnectAllPeers
+        self.send = send
+    }
+    
+    var create: (AnyHashable, String, String, [String : String]?) -> Effect<Action, Never> = { _,_,_,_  in
         _unimplemented("create")
     }
 
-    public var destroy: (AnyHashable) -> Effect<Never, Never> = { _ in
+    var destroy: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("destroy")
     }
 
-    public var startBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    var startBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("startBrowsingForPeers")
     }
     
-    public var stopBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    var stopBrowsingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("stopBrowsingForPeers")
     }
     
-    public var startAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    var startAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("startAdvertisingForPeers")
     }
     
-    public var stopAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    var stopAdvertisingForPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("stopAdvertisingForPeers")
     }
     
-    public var invitationHandler: (AnyHashable, Bool) -> Effect<Never, Never> = { _,_ in
+    var invitationHandler: (AnyHashable, Bool) -> Effect<Never, Never> = { _,_ in
         _unimplemented("invitationHandler")
     }
 
-    public var invitePeer: (AnyHashable, PeerID, Data?, TimeInterval) -> Effect<Never, Never> = { _,_,_,_ in
+    var invitePeer: (AnyHashable, PeerID, Data?, TimeInterval) -> Effect<Never, Never> = { _,_,_,_ in
         _unimplemented("invitePeer")
     }
     
-    public var disconnectAllPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
+    var disconnectAllPeers: (AnyHashable) -> Effect<Never, Never> = { _ in
         _unimplemented("disconnectFromSession")
     }
     
-    public var send: (AnyHashable, Receiver, Data) -> Effect<Never, Never> = { _,_,_   in
+    var send: (AnyHashable, Receiver, Data) -> Effect<Never, Never> = { _,_,_   in
         _unimplemented("send")
     }
     
